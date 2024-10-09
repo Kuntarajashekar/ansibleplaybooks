@@ -13,3 +13,6 @@
       vars:
         packages:
            - openjdk-11-jdk
+
+ansible-playbook javainstall.yaml --syntax-check
+ansible-playbook -i hosts javainstall.yaml
