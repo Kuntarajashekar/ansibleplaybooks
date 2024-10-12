@@ -1,24 +1,40 @@
 ---
-- hosts: all
-  become_method: sudo
-  become: false
+- name: Install Jenkins on Ubuntu
+  hosts: all
+  become: yes
+
   tasks:
-    - name: ensure the jenkins apt repository key is installed
-      apt_key:
-        url: "https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key"
+    - name: Install Java (Jenkins dependency)
+      apt:
+        name: openjdk-17-jdk
         state: present
-      become: yes
+        update_cache: yes
 
-
-    - name: ensure the repository is configured
-      apt_repository: 
-        repo: 'deb https://pkg.jenkins.io/debian-stable binary/' 
+    - name: Add Jenkins repository key
+      ansible.builtin.apt_key:
+        url: https://pkg.jenkins.io/debian/jenkins.io-2023.key
         state: present
-        filename: 'jenkins-stable'
-      become: yes
 
-    - name: ensure jenkins is installed
-      apt: name=jenkins state=present
+    - name: Add Jenkins repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/"
+        state: present
+        filename: "jenkins"
 
-    - name: ensure jenkins is running
-      service: name=jenkins state=started
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install Jenkins
+      apt:
+        name: jenkins
+        state: present
+
+    - name: Start and enable Jenkins service
+      service:
+        name: jenkins
+        state: started
+        enabled: yes
+
+
+ansible-playbook jenkins.yaml -vvvv        
