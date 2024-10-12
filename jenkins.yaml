@@ -10,16 +10,13 @@
         state: present
         update_cache: yes
 
-    - name: Add Jenkins repository key
-      ansible.builtin.apt_key:
-        url: https://pkg.jenkins.io/debian/jenkins.io-2023.key
-        state: present
+    - name: Add Jenkins GPG key
+      ansible.builtin.shell: |
+        curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
 
     - name: Add Jenkins repository
-      ansible.builtin.apt_repository:
-        repo: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/"
-        state: present
-        filename: "jenkins"
+      ansible.builtin.shell: |
+        echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/ | tee /etc/apt/sources.list.d/jenkins.list > /dev/null
 
     - name: Update apt cache
       ansible.builtin.apt:
@@ -35,6 +32,7 @@
         name: jenkins
         state: started
         enabled: yes
+root@ubuntu-controller:~# 
 
 
 ansible-playbook jenkins.yaml -vvvv        
