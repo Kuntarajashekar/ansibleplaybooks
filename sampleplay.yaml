@@ -5,9 +5,19 @@
   - name: create a new file
     ansible.builtin.file:
       name: /root/raj
+      state: directory
+  - name: install uzip
+    ansible.builtin.apt:
+      name: unzip
       state: present
 
   - name: install archiev file
     ansible.builtin.get_url:
        url: "https://roboshop-builds.s3.amazonaws.com/web.zip"
        dest: /root/raj
+
+  - name: extrat the .zip files
+    ansible.builtin.unarchive:
+       src: /root/raj/web.zip
+       dest: /usr
+       remote_src: yes
