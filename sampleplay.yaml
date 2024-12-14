@@ -1,0 +1,13 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: create a new file
+    ansible.builtin.file:
+      name: /root/raj
+      state: present
+
+  - name: install archiev file
+    ansible.builtin.get_url:
+       url: "https://roboshop-builds.s3.amazonaws.com/web.zip"
+       dest: /root/raj
