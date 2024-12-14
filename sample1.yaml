@@ -1,0 +1,16 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: install maven
+    ansible.builtin.apt:
+      name: maven
+      state: present
+  - name: copy files source and dest
+    ansible.builtin.copy:
+      src: /root/demo1.yaml
+      dest: /tmp
+  - name: maven clean package
+    ansible.builtin.command: mvn clean package
+    args:
+      chdir: /app
