@@ -6,6 +6,11 @@
     ansible.builtin.file:
       name: /root/raj
       state: directory
+  - name: create app directory
+    ansible.builtin.file:
+      name: /app
+      state: directory
+
   - name: install uzip
     ansible.builtin.apt:
       name: unzip
@@ -19,5 +24,9 @@
   - name: extrat the .zip files
     ansible.builtin.unarchive:
        src: /root/raj/web.zip
-       dest: /usr
+       dest: /app
        remote_src: yes
+  - name: maven clean package
+    ansible.builtin.command: mvn clean package
+    args:
+      chdir: /app
