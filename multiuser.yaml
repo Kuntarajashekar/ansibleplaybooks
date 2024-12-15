@@ -1,0 +1,12 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: create multiple users
+    ansible.builtin.user:
+      name: "{{ item.name }}"
+      uid: "{{ item.uid }}"
+    with_items:
+    - { name: megastar, uid: 2001 }
+    - { name: powestar, uid: 2002 }
+    - { name: superstar, uid: 2003 }
