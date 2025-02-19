@@ -65,8 +65,11 @@
         location: "Canada Central"
         subnet_name: "MySubnet"
         virtual_network_name: "MyVNet"
-        public_ip_name: "MyPublicIP"
-        network_security_group: "MyNSG"
+        ip_configurations:
+          - name: "MyNICConfig"
+            private_ip_address_allocation: Dynamic
+            public_ip_name: "MyPublicIP"
+            network_security_group: "MyNSG"
         tags:
           Environment: "Development"
           Department: "IT"
