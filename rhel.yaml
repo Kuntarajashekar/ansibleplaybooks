@@ -1,0 +1,111 @@
+---
+- name: Create Azure RHEL VM with networking
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Create Resource Group
+      azure_rm_resourcegroup:
+        name: "MyResourceGroup"
+        location: "Canada Central"
+        tags:
+          Environment: "Development"
+          Department: "IT"
+
+    - name: Create Virtual Network
+      azure_rm_virtualnetwork:
+        resource_group: "MyResourceGroup"
+        name: "MyVNet"
+        location: "Canada Central"
+        address_prefixes:
+          - "10.0.0.0/16"
+        tags:
+          Environment: "Development"
+          Department: "IT"
+
+    - name: Create Subnet
+      azure_rm_subnet:
+        resource_group: "MyResourceGroup"
+        virtual_network_name: "MyVNet"
+        name: "MySubnet"
+        address_prefix: "10.0.1.0/24"
+
+    - name: Create Network Security Group (NSG)
+      azure_rm_securitygroup:
+        resource_group: "MyResourceGroup"
+        name: "MyNSG"
+        location: "Canada Central"
+        rules:
+          - name: AllowSSH
+            protocol: Tcp
+            direction: Inbound
+            priority: 100
+            access: Allow
+            destination_port_range: "22"
+            source_address_prefix: "*"
+            destination_address_prefix: "*"
+            source_port_range: "*"
+        tags:
+          Environment: "Development"
+          Department: "IT"
+
+    - name: Create Public IP Address
+      azure_rm_publicipaddress:
+        resource_group: "MyResourceGroup"
+        name: "MyPublicIP"
+        location: "Canada Central"
+        allocation_method: Static
+        tags:
+          Environment: "Development"
+          Department: "IT"
+
+    - name: Create Network Interface Card (NIC)
+      azure_rm_networkinterface:
+        resource_group: "MyResourceGroup"
+        name: "MyNIC"
+        location: "Canada Central"
+        subnet_name: "MySubnet"
+        virtual_network_name: "MyVNet"
+        public_ip_name: "MyPublicIP"
+        network_security_group: "MyNSG"
+        tags:
+          Environment: "Development"
+          Department: "IT"
+
+    - name: Create OS Disk for RHEL VM
+      azure_rm_manageddisk:
+        resource_group: "MyResourceGroup"
+        name: "MyOSDisk"
+        location: "Canada Central"
+        disk_size_gb: 30
+        storage_account_type: Standard_LRS
+        tags:
+          Environment: "Development"
+          Department: "IT"
+
+    - name: Create Azure RHEL VM
+      azure_rm_virtualmachine:
+        resource_group: "MyResourceGroup"
+        name: "MyRHELVM"
+        location: "East US"
+        vm_size: "Standard_DS2_v2"
+        admin_username: "azureuser"
+        admin_password: "MyStrongPassword123!"
+        image:
+          publisher: RedHat
+          offer: RHEL
+          sku: "7.9"
+          version: latest
+        network_interfaces:
+          - name: "MyNIC"
+        os_disk:
+          name: "MyOSDisk"
+          caching: ReadWrite
+          create_option: FromImage
+        storage_profile:
+          os_disk:
+            create_option: FromImage
+            managed_disk:
+              storage_account_type: Standard_LRS
+        tags:
+          Environment: "Development"
+          Department: "IT"
