@@ -1,0 +1,39 @@
+---
+- hosts: localhost
+  gather_facts: no
+  become: yes
+  tasks:
+  - name: git clone
+    shell: cd /root && git clone https://github.com/mavrick202/dockertest1.git
+  - name: install nginx
+    apt:
+      name: nginx
+      state: present
+  - name: start the service
+    shell: service nginx start
+  - name: copy files form src to dest
+    copy:
+       src: '/root/dockertest1/index.html'
+       dest: '/var/www/html/index.nginx-debian.html'
+       remote_src: yes
+       owner: root
+       group: root
+       mode: '0644'
+  - name: copy style files
+    copy:
+       src: '/root/dockertest1/style.css'
+       dest: '/var/www/html/style.css'
+       remote_src: yes
+       owner: root
+       group: root
+       mode: '0644'
+  - name: copy js files
+    copy:
+       src: '/root/dockertest1/scorekeeper.js'
+       dest: '/var/www/html/scorekeeper.js'
+       remote_src: yes
+       owner: root
+       group: root
+       mode: '0644'
+  - name: restart nginx service
+    command: service nginx restart
