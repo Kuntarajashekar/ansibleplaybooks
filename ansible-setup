@@ -23,4 +23,13 @@ localhost ansible_connection=local
 [dbservers]
 db.example.com ansible_user=root ansible_password=your_password
 
+root@ubuntu-vm:~# cat /root/hosts
+[local]
+127.0.0.1 ansible_connection=local
+
+[webservers]
+20.63.16.08 ansible_user=azureuser ansible_password=Azure
+root@ubuntu-vm:~# 
+
+
 
