@@ -1,0 +1,47 @@
+---
+- hosts: localhost
+  become: yes
+  tasks:
+    - name: create file if not exist
+      file:
+        path: "/root/automation.json"
+        state: touch
+    - name: get automation bundle
+      get_url:
+        url: https://roboshop-artifacts.s3.amazonaws.com/frontend-v3.zip
+        dest: "/root"
+        owner: "root"
+        remote_src: yes
+---
+- hosts: localhost
+  become: yes
+  gather_facts: false
+  tasks:
+    - name: install nginx server
+      package:
+        name: nginx
+        state: present
+    - name: Create a custom index.html page
+      ansible.builtin.copy:
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Welcome to Nginx via Ansible</title>
+          </head>
+          <body>
+              <h1>Hello from Ansible!</h1>
+              <p>Nginx has been successfully installed and configured.</p>
+          </body>
+          </html>
+        dest: /var/www/html/index.html
+        owner: www-data
+        group: www-data
+        mode: "0644"
+      notify: Restart Nginx
+
+  handlers:
+    - name: Restart Nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted

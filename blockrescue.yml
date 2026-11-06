@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  become: yes
+  gather_facts: false
+  serial: 1
+  tasks:
+    - name: "Deployment started"
+      block:
+        - name: perform critical deployment on Non-Prod server
+          shell: echo "Deploying security patches to non-production servers"
+          register: deploy_result
+        - name: An issue has occured
+          command: /bin/false
+        - name: Troubleshoot the issue with other error handling
+          shell: echo "Issue is security patch has some vulnerability"
+      rescue:
+        - name: "Rolling back to previous version"
+          ansible.builtin.debug:
+            msg: "An error occurred during deployment on inventory_hostname. Running rollback procedures"
+      always:
+        - name: Cleanup
+          ansible.builtin.debug:
+            msg: "Execution fisished cleaning up temporary security and effected files"
